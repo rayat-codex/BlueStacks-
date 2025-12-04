@@ -40,20 +40,28 @@ jobs:
 
         echo "TAILSCALE_IP=$tsIP" >> $env:GITHUB_ENV
 
-    - name: Install Chocolatey
+    - name: Install BlueStacks 5 (Nougat 64-bit) via Direct Download
       shell: powershell
       run: |
-        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        # Download the BlueStacks 5 setup file
+        $bluestacksUrl = "https://cdn3.bluestacks.com/downloads/5.20.101.1002/BlueStacksMicroInstaller_5.20.101.1002_amd64_native.exe" # Use a known stable direct link
+        $installerPath = "$env:TEMP\BlueStacksInstaller.exe"
+        Write-Host "Downloading BlueStacks 5 installer from $bluestacksUrl"
+        Invoke-WebRequest -Uri $bluestacksUrl -OutFile $installerPath
 
-    - name: Install BlueStacks 5 (Nougat 64-bit) via Chocolatey
-      shell: powershell
-      run: |
-        # Use the generic BlueStacks package. The installer should handle 64-bit or may require further setup for Nougat 64-bit instance.
-        choco install bluestacks5 -y --limit-output
+        # Run the installer silently. BlueStacks 5 handles the Nougat 64-bit instance post-install.
+        # /s argument is commonly used for silent installation of EXE files.
+        Write-Host "Starting silent installation..."
+        Start-Process -FilePath $installerPath -ArgumentList "/s" -Wait -PassThru | Out-Null
+        
+        Write-Host "BlueStacks 5 installation initiated."
 
-        # Optional: Add steps here to launch Multi-Instance Manager to create the Nougat 64-bit instance
-        # For example, using the BlueStacks offline installer command line arguments if available, 
-        # but that would bypass Chocolatey. For pure choco, this is the best initial install.
+        # Wait a reasonable amount of time for the installation to complete.
+        # BlueStacks installation can take several minutes. You might need to adjust this wait time.
+        Start-Sleep -Seconds 300 # Wait 5 minutes for the installation
+
+        # NOTE: A manual step to launch the Multi-Instance Manager and create 
+        # a Nougat 64-bit instance may still be required if the default is 32-bit.
         
     - name: Download and run setup.bat from GitLab
       shell: powershell
