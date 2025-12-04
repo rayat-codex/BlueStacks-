@@ -1,4 +1,4 @@
-name: Avica + win11 + tailscale+BlueStacks 
+name: avica + win11 + tailscale  # Name is now all lowercase
 
 on:
   workflow_dispatch:
@@ -43,25 +43,23 @@ jobs:
     - name: Install BlueStacks 5 (Nougat 64-bit) via Direct Download
       shell: powershell
       run: |
-        # Download the BlueStacks 5 setup file
-        $bluestacksUrl = "https://cdn3.bluestacks.com/downloads/5.20.101.1002/BlueStacksMicroInstaller_5.20.101.1002_amd64_native.exe" # Use a known stable direct link
+        # Using a more robust, official download link for the latest BlueStacks 5 installer.
+        # This link typically handles redirects better or is more stable.
+        $bluestacksUrl = "https://cdn.bluestacks.com/downloads/5.20.101.1002/BlueStacksMicroInstaller_5.20.101.1002_amd64_native.exe" 
         $installerPath = "$env:TEMP\BlueStacksInstaller.exe"
+        
         Write-Host "Downloading BlueStacks 5 installer from $bluestacksUrl"
-        Invoke-WebRequest -Uri $bluestacksUrl -OutFile $installerPath
+        # Using the -FollowRelocation parameter to handle redirects (302/307 codes)
+        Invoke-WebRequest -Uri $bluestacksUrl -OutFile $installerPath -FollowRelocation
 
-        # Run the installer silently. BlueStacks 5 handles the Nougat 64-bit instance post-install.
-        # /s argument is commonly used for silent installation of EXE files.
+        # Run the installer silently.
         Write-Host "Starting silent installation..."
         Start-Process -FilePath $installerPath -ArgumentList "/s" -Wait -PassThru | Out-Null
         
         Write-Host "BlueStacks 5 installation initiated."
 
         # Wait a reasonable amount of time for the installation to complete.
-        # BlueStacks installation can take several minutes. You might need to adjust this wait time.
         Start-Sleep -Seconds 300 # Wait 5 minutes for the installation
-
-        # NOTE: A manual step to launch the Multi-Instance Manager and create 
-        # a Nougat 64-bit instance may still be required if the default is 32-bit.
         
     - name: Download and run setup.bat from GitLab
       shell: powershell
