@@ -19,7 +19,6 @@ jobs:
         Invoke-WebRequest -Uri $tsUrl -OutFile $installerPath
         Start-Process msiexec.exe -ArgumentList "/i", "`"$installerPath`"", "/quiet", "/norestart" -Wait
         Remove-Item $installerPath -Force
-                  }
 
     - name: Establish Tailscale Connection
       shell: powershell
@@ -41,11 +40,17 @@ jobs:
 
         echo "TAILSCALE_IP=$tsIP" >> $env:GITHUB_ENV
 
-       name: Install BlueStacks 5 (Using Chocolatey) 
-        run: |
+    - name: Install Chocolatey
+      shell: powershell
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+    - name: Install BlueStacks 5 (Using Chocolatey) 📦
+      shell: powershell
+      run: |
           Write-Host "Installing BlueStacks 5 using Chocolatey Package Manager..."
-          # Use Chocolatey to handle the complex download and silent installation.
-          # The timeout is increased because BlueStacks is a very large install.
+          # Using 'bluestacks' which is the correct package name on Chocolatey (not bluestacks5).
+          # Timeout is increased to 600 seconds (10 minutes) for the large installation.
           choco install bluestacks -y --params "'/Silent /NoRestart'" --timeout 600
 
           Write-Host "BlueStacks 5 installation initiated via Chocolatey. You can verify it via RDP."
@@ -73,5 +78,4 @@ jobs:
           Write-Host (Get-Date -Format "u") " - heartbeat"
           Start-Sleep -Seconds 60
         }
-
         
