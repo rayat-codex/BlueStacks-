@@ -40,7 +40,7 @@ jobs:
 
         echo "TAILSCALE_IP=$tsIP" >> $env:GITHUB_ENV
 
-- name: Install BlueStacks 5 (Using Chocolatey) 📦
+       name: Install BlueStacks 5 (Using Chocolatey) 
         run: |
           Write-Host "Installing BlueStacks 5 using Chocolatey Package Manager..."
           # Use Chocolatey to handle the complex download and silent installation.
