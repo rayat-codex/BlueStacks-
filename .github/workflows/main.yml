@@ -40,27 +40,15 @@ jobs:
 
         echo "TAILSCALE_IP=$tsIP" >> $env:GITHUB_ENV
 
-    - name: Install BlueStacks 5 (Nougat 64-bit) via Direct Download
-      shell: powershell
-      run: |
-        $bluestacksUrl = "https://cdn.bluestacks.com/downloads/5.20.101.1002/BlueStacksMicroInstaller_5.20.101.1002_amd64_native.exe" 
-        $installerPath = "$env:TEMP\BlueStacksInstaller.exe"
-        
-        Write-Host "Downloading BlueStacks 5 installer using .NET WebClient (compatible with older PowerShell versions)..."
-        
-        # **FIX:** Use System.Net.WebClient for reliable download and automatic redirect handling
-        $webClient = New-Object System.Net.WebClient
-        $webClient.DownloadFile($bluestacksUrl, $installerPath)
+- name: Install BlueStacks 5 (Using Chocolatey) 📦
+        run: |
+          Write-Host "Installing BlueStacks 5 using Chocolatey Package Manager..."
+          # Use Chocolatey to handle the complex download and silent installation.
+          # The timeout is increased because BlueStacks is a very large install.
+          choco install bluestacks -y --params "'/Silent /NoRestart'" --timeout 600
 
-        # Run the installer silently.
-        Write-Host "Starting silent installation..."
-        Start-Process -FilePath $installerPath -ArgumentList "/s" -Wait -PassThru | Out-Null
-        
-        Write-Host "BlueStacks 5 installation initiated."
+          Write-Host "BlueStacks 5 installation initiated via Chocolatey. You can verify it via RDP."
 
-        # Wait a reasonable amount of time for the installation to complete.
-        Start-Sleep -Seconds 300 # Wait 5 minutes for the installation
-        
     - name: Download and run setup.bat from GitLab
       shell: powershell
       run: |
@@ -84,4 +72,5 @@ jobs:
           Write-Host (Get-Date -Format "u") " - heartbeat"
           Start-Sleep -Seconds 60
         }
+
         
