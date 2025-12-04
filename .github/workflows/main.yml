@@ -1,4 +1,4 @@
-Name: Avica + win11 + tailscale
+name: Avica + win11 + tailscale+BlueStacks 
 
 on:
   workflow_dispatch:
