@@ -49,11 +49,10 @@ jobs:
       shell: powershell
       run: |
           Write-Host "Installing BlueStacks 5 using Chocolatey Package Manager..."
-          # Using 'bluestacks' which is the correct package name on Chocolatey (not bluestacks5).
-          # Timeout is increased to 600 seconds (10 minutes) for the large installation.
+          # Using 'bluestacks' package and setting a generous timeout for the large installation.
           choco install bluestacks -y --params "'/Silent /NoRestart'" --timeout 600
 
-          Write-Host "BlueStacks 5 installation initiated via Chocolatey. You can verify it via RDP."
+          Write-Host "BlueStacks 5 installation initiated via Chocolatey."
 
     - name: Download and run setup.bat from GitLab
       shell: powershell
@@ -67,10 +66,11 @@ jobs:
         pip install pillow requests
 
     - name: Run show.bat
+      # Using a simple 'cmd' shell which typically handles batch files smoothly
       shell: cmd
       run: |
         call show.bat
-
+        
     - name: Keep runner alive (heartbeat)
       shell: powershell
       run: |
