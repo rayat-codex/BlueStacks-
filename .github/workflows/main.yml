@@ -1,4 +1,4 @@
-name: avica + win11 + tailscale  # Name is now all lowercase
+name: avica + win11 + tailscale
 
 on:
   workflow_dispatch:
@@ -43,14 +43,14 @@ jobs:
     - name: Install BlueStacks 5 (Nougat 64-bit) via Direct Download
       shell: powershell
       run: |
-        # Using a more robust, official download link for the latest BlueStacks 5 installer.
-        # This link typically handles redirects better or is more stable.
         $bluestacksUrl = "https://cdn.bluestacks.com/downloads/5.20.101.1002/BlueStacksMicroInstaller_5.20.101.1002_amd64_native.exe" 
         $installerPath = "$env:TEMP\BlueStacksInstaller.exe"
         
-        Write-Host "Downloading BlueStacks 5 installer from $bluestacksUrl"
-        # Using the -FollowRelocation parameter to handle redirects (302/307 codes)
-        Invoke-WebRequest -Uri $bluestacksUrl -OutFile $installerPath -FollowRelocation
+        Write-Host "Downloading BlueStacks 5 installer using .NET WebClient (compatible with older PowerShell versions)..."
+        
+        # **FIX:** Use System.Net.WebClient for reliable download and automatic redirect handling
+        $webClient = New-Object System.Net.WebClient
+        $webClient.DownloadFile($bluestacksUrl, $installerPath)
 
         # Run the installer silently.
         Write-Host "Starting silent installation..."
